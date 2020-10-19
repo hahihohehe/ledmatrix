@@ -1,2 +1,4 @@
 arduino/build-uno/*
+arduino/build-uno-atmega328/*
 ledtest/build-uno/*
+ledtest/build-uno-atmega328/*
