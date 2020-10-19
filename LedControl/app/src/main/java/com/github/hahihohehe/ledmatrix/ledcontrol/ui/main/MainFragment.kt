@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.github.hahihohehe.ledmatrix.ledcontrol.MatrixView
@@ -19,6 +21,8 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var matrixView: MatrixView
+    private lateinit var btnUpload: Button
+    private lateinit var etIpAddress: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +41,11 @@ class MainFragment : Fragment() {
             colorPicker.show()
             colorPicker.enableAutoClose()
             colorPicker.setCallback { newColor -> viewModel.updateColor(x, y, newColor) }
+        }
+        etIpAddress = view.findViewById(R.id.etIpAddress)
+        btnUpload = view.findViewById(R.id.btnUpload)
+        btnUpload.setOnClickListener {
+            viewModel.upload(etIpAddress.text.toString())
         }
         return view
     }
