@@ -17,8 +17,9 @@ class Controller {
     @PostMapping("/display")
     fun display(@RequestBody data : Array<Array<Array<Byte>>>) : String {
         var animation = Animation(data)
-        val frame = Frame(MutableList(100) { Color(50.toByte(), 45.toByte(), 30.toByte())})
-        arduinoController.sendFrame(frame)
+        //val frame = Frame(MutableList(100) { Color(50.toByte(), 45.toByte(), 30.toByte())})
+        //arduinoController.sendFrame(frame)
+        arduinoController.sendFrame(animation.frames[0])
         return "OK"
     }
 }
