@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.github.hahihohehe.ledmatrix.ledcontrol.ColorPaletteView
 import com.github.hahihohehe.ledmatrix.ledcontrol.MatrixView
 import com.github.hahihohehe.ledmatrix.ledcontrol.R
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
@@ -21,6 +22,7 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var matrixView: MatrixView
+    private lateinit var colorPaletteView: ColorPaletteView
     private lateinit var btnUpload: Button
     private lateinit var etIpAddress: EditText
 
@@ -31,21 +33,29 @@ class MainFragment : Fragment() {
         val view = inflater.inflate(R.layout.main_fragment, container, false)
         matrixView = view.findViewById(R.id.matrixView)
         matrixView.onPixelClickedListerner = { x, y ->
-            val color = viewModel.getColor(x, y)
-            val colorPicker = ColorPicker(
-                requireActivity(),
-                Color.red(color),
-                Color.green(color),
-                Color.blue(color)
-            )
-            colorPicker.show()
-            colorPicker.enableAutoClose()
-            colorPicker.setCallback { newColor -> viewModel.updateColor(x, y, newColor) }
+            viewModel.updateColor(x, y, colorPaletteView.selected)
         }
         etIpAddress = view.findViewById(R.id.etIpAddress)
         btnUpload = view.findViewById(R.id.btnUpload)
         btnUpload.setOnClickListener {
             viewModel.upload(etIpAddress.text.toString())
+        }
+        colorPaletteView = view.findViewById(R.id.colorPaletteView)
+        colorPaletteView.onItemClickedListerner = { x ->
+            if (colorPaletteView.isSelected(x)) {
+                val color = viewModel.getPaletteColor(x)
+                val colorPicker = ColorPicker(
+                    requireActivity(),
+                    Color.red(color),
+                    Color.green(color),
+                    Color.blue(color)
+                )
+                colorPicker.show()
+                colorPicker.enableAutoClose()
+                colorPicker.setCallback { newColor -> viewModel.updatePaletteColor(x, newColor) }
+            } else {
+                colorPaletteView.selected = x
+            }
         }
         return view
     }
@@ -55,6 +65,8 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.colors.observe(viewLifecycleOwner,
             { colors -> matrixView.setColors(colors) })
+        viewModel.palette.observe(viewLifecycleOwner,
+            { colors -> colorPaletteView.setColors(colors) })
     }
 
 }

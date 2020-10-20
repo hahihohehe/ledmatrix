@@ -15,15 +15,23 @@ import java.net.URL
 
 class MainViewModel : ViewModel() {
     private val colorsSource: Array<Array<Int>> = Array(10) { Array(10) { Color.BLACK } }
-
     val colors: LiveData<Array<Array<Int>>> = MutableLiveData(colorsSource)
+    private val paletteSource: Array<Int> = Array(16) { Color.BLACK }
+    val palette: LiveData<Array<Int>> = MutableLiveData(paletteSource)
 
-    fun updateColor(x: Int, y: Int, @ColorInt color: Int) {
-        colorsSource[x][y] = color
+    fun updateColor(x: Int, y: Int, selected: Int) {
+        colorsSource[x][y] = paletteSource[selected]
         (colors as MutableLiveData).value = colorsSource
     }
 
     fun getColor(x: Int, y: Int) = colorsSource[x][y]
+
+    fun getPaletteColor(x: Int) = paletteSource[x]
+
+    fun updatePaletteColor(x: Int, @ColorInt color: Int) {
+        paletteSource[x] = color
+        (palette as MutableLiveData).value = paletteSource
+    }
 
     fun upload(ipAddress: String) {
         viewModelScope.launch(Dispatchers.IO) {
