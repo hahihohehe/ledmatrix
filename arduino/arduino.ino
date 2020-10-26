@@ -12,7 +12,7 @@ void setup() {
   strip.begin();
   strip.show();
   for (int i = 0; i < LED_COUNT; i++) {
-    strip.setPixelColor(i, i, i, 100 - i);
+    strip.setPixelColor(i, 10, 10, 10);
   }
   strip.show();
   Serial.begin(9600);
