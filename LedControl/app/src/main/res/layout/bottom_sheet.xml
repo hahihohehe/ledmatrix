@@ -4,7 +4,6 @@
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
     android:orientation="vertical"
     app:behavior_hideable="false"
     app:behavior_peekHeight="50dp"
@@ -23,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        android:text="IP adress of server" />
+        android:text="IP address of server" />
 
     <EditText
         android:id="@+id/etIpAddress"

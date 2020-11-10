@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
             != PackageManager.PERMISSION_GRANTED) {
             println("permission not granted")
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.INTERNET), 1);
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.INTERNET), 1)
         }
         else {
             println("permission granted")
