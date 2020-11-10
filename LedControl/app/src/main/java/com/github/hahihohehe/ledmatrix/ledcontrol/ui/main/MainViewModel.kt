@@ -1,13 +1,13 @@
 package com.github.hahihohehe.ledmatrix.ledcontrol.ui.main
 
 import android.graphics.Color
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -34,33 +34,37 @@ class MainViewModel : ViewModel() {
     }
 
     fun upload(ipAddress: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val url = URL("http://$ipAddress/display")
+        val job = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val url = URL("http://$ipAddress/display")
 
-            val con: HttpURLConnection = url.openConnection() as HttpURLConnection
-            con.requestMethod = "POST"
+                val con: HttpURLConnection = url.openConnection() as HttpURLConnection
+                con.requestMethod = "POST"
 
-            con.setRequestProperty("Content-Type", "application/json; utf-8")
+                con.setRequestProperty("Content-Type", "application/json; utf-8")
 
-            con.doOutput = true
+                con.doOutput = true
 
-            val jsonInputString = createJson()
+                val jsonInputString = createJson()
 
-            con.outputStream.use { os ->
-                val input = jsonInputString.toByteArray(charset("utf-8"))
-                os.write(input, 0, input.size)
-            }
-
-            val code: Int = con.responseCode
-            println(code)
-
-            BufferedReader(InputStreamReader(con.inputStream, "utf-8")).use { br ->
-                val response = StringBuilder()
-                var responseLine: String? = null
-                while (br.readLine().also { responseLine = it } != null) {
-                    response.append(responseLine!!.trim { it <= ' ' })
+                con.outputStream.use { os ->
+                    val input = jsonInputString.toByteArray(charset("utf-8"))
+                    os.write(input, 0, input.size)
                 }
-                println(response.toString())
+
+                val code: Int = con.responseCode
+                println(code)
+
+                BufferedReader(InputStreamReader(con.inputStream, "utf-8")).use { br ->
+                    val response = StringBuilder()
+                    var responseLine: String? = null
+                    while (br.readLine().also { responseLine = it } != null) {
+                        response.append(responseLine!!.trim { it <= ' ' })
+                    }
+                    println(response.toString())
+                }
+            } catch (e: Throwable) {
+                e.printStackTrace()
             }
         }
     }
