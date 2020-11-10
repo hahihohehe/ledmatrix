@@ -7,37 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:text="IP adress of server"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/etIpAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="e.g. 192.168.178.34"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <Button
-        android:id="@+id/btnUpload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="Upload"
-        app:layout_constraintBottom_toBottomOf="@+id/etIpAddress"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <com.github.hahihohehe.ledmatrix.ledcontrol.ColorPaletteView
         android:id="@+id/colorPaletteView"
         android:layout_width="0dp"
@@ -46,8 +15,9 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/matrixView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etIpAddress" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.github.hahihohehe.ledmatrix.ledcontrol.MatrixView
         android:id="@+id/matrixView"

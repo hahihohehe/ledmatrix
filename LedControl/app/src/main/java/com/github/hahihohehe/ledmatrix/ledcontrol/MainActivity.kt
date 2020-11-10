@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
+        setSupportActionBar(findViewById(R.id.toolbar))
+
         checkPermissions()
 
         if (savedInstanceState == null) {

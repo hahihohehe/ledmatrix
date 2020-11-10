@@ -35,11 +35,11 @@ class MainFragment : Fragment() {
         matrixView.onPixelClickedListerner = { x, y ->
             viewModel.updateColor(x, y, colorPaletteView.selected)
         }
-        etIpAddress = view.findViewById(R.id.etIpAddress)
-        btnUpload = view.findViewById(R.id.btnUpload)
-        btnUpload.setOnClickListener {
-            viewModel.upload(etIpAddress.text.toString())
-        }
+//        etIpAddress = view.findViewById(R.id.etIpAddress)
+//        btnUpload = view.findViewById(R.id.btnUpload)
+//        btnUpload.setOnClickListener {
+//            viewModel.upload(etIpAddress.text.toString())
+//        }
         colorPaletteView = view.findViewById(R.id.colorPaletteView)
         colorPaletteView.onItemClickedListerner = { x ->
             if (colorPaletteView.isSelected(x)) {
