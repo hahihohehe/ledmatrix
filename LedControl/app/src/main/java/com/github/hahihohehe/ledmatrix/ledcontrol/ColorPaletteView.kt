@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.GridLayout
 import androidx.annotation.ColorInt
 
@@ -39,33 +38,28 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
             pixelView.layoutParams = param
             pixelView.setBackgroundColor(Color.BLACK)
             pixelView.setOnClickListener {
-                if (onItemClickedListerner != null)
-                    onItemClickedListerner!!(i)
+                if (onItemClickedListener != null)
+                    onItemClickedListener!!(i)
             }
             addView(pixelView)
         }
 
-        viewTreeObserver.addOnGlobalLayoutListener(
-            object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    val pLength: Int
-                    val pWidth: Int = width
-                    val pHeight: Int = width
+        viewTreeObserver.addOnGlobalLayoutListener {
+            val pLength: Int
+            val pWidth: Int = width
+            val pHeight: Int = width
 
-                    //Set myGridLayout equal width and height
-                    pLength = if (pWidth >= pHeight) pHeight else pWidth
-                    val pParams: ViewGroup.LayoutParams = layoutParams
-                    pParams.width = pLength
-                    pParams.height = pLength / 4
-                    layoutParams = pParams
-
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
-                }
-            })
+            //Set myGridLayout equal width and height
+            pLength = if (pWidth >= pHeight) pHeight else pWidth
+            val pParams: ViewGroup.LayoutParams = layoutParams
+            pParams.width = pLength
+            pParams.height = pLength / 4
+            layoutParams = pParams
+        }
         selected = 0
     }
 
-    var onItemClickedListerner: ((Int) -> Unit)? = null
+    var onItemClickedListener: ((Int) -> Unit)? = null
 
     fun setPixelColor(i: Int, @ColorInt color: Int) {
         views[i].setBackgroundColor(color)

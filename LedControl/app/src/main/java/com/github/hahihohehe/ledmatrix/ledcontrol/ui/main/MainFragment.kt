@@ -15,11 +15,6 @@ import com.github.hahihohehe.ledmatrix.ledcontrol.R
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
 
 class MainFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
     private lateinit var viewModel: MainViewModel
     private lateinit var matrixView: MatrixView
     private lateinit var colorPaletteView: ColorPaletteView
@@ -29,8 +24,11 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val view = inflater.inflate(R.layout.main_fragment, container, false)
+    ): View = inflater.inflate(R.layout.main_fragment, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         matrixView = view.findViewById(R.id.matrixView)
         matrixView.onPixelClickedListerner = { x, y ->
             viewModel.updateColor(x, y, colorPaletteView.selected)
@@ -41,7 +39,7 @@ class MainFragment : Fragment() {
 //            viewModel.upload(etIpAddress.text.toString())
 //        }
         colorPaletteView = view.findViewById(R.id.colorPaletteView)
-        colorPaletteView.onItemClickedListerner = { x ->
+        colorPaletteView.onItemClickedListener = { x ->
             if (colorPaletteView.isSelected(x)) {
                 val color = viewModel.getPaletteColor(x)
                 val colorPicker = ColorPicker(
@@ -57,7 +55,6 @@ class MainFragment : Fragment() {
                 colorPaletteView.selected = x
             }
         }
-        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
