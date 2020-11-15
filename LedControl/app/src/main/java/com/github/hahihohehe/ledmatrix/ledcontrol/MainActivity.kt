@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.github.hahihohehe.ledmatrix.ledcontrol.ui.main.MainFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var tabLayout: TabLayout
     private lateinit var pager: ViewPager2
     private lateinit var etIpAddress: EditText
@@ -48,6 +48,10 @@ class MainActivity : AppCompatActivity() {
         etIpAddress = findViewById(R.id.etIpAddress)
         btnUpload = findViewById(R.id.btnUpload)
         btnUpload.setOnClickListener {
+            if (etIpAddress.text.toString() == "") {
+                val behavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet))
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
             upload(etIpAddress.text.toString())
         }
     }
@@ -106,5 +110,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        etIpAddress.setText(getPreferences(MODE_PRIVATE).getString(KEY_IP_ADDRESS, ""))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        getPreferences(MODE_PRIVATE).edit()
+            .putString(KEY_IP_ADDRESS, etIpAddress.text.toString()).apply()
+    }
+
     var activeFragment = MainFragment()
+
+    companion object {
+        const val KEY_IP_ADDRESS = "IP_ADDRESS"
+    }
 }
