@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.github.hahihohehe.ledmatrix.ledcontrol.ColorPaletteView
+import com.github.hahihohehe.ledmatrix.ledcontrol.MainActivity
 import com.github.hahihohehe.ledmatrix.ledcontrol.MatrixView
 import com.github.hahihohehe.ledmatrix.ledcontrol.R
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
@@ -33,11 +34,6 @@ class MainFragment : Fragment() {
         matrixView.onPixelClickedListerner = { x, y ->
             viewModel.updateColor(x, y, colorPaletteView.selected)
         }
-//        etIpAddress = view.findViewById(R.id.etIpAddress)
-//        btnUpload = view.findViewById(R.id.btnUpload)
-//        btnUpload.setOnClickListener {
-//            viewModel.upload(etIpAddress.text.toString())
-//        }
         colorPaletteView = view.findViewById(R.id.colorPaletteView)
         colorPaletteView.onItemClickedListener = { x ->
             if (colorPaletteView.isSelected(x)) {
@@ -66,4 +62,10 @@ class MainFragment : Fragment() {
             { colors -> colorPaletteView.setColors(colors) })
     }
 
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as MainActivity).activeFragment = this
+    }
+
+    val matrixJson get() = viewModel.createJson()
 }
