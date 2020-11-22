@@ -22,6 +22,8 @@ tools:context=".MainActivity">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tab_layout"
+        app:tabIndicatorColor="?attr/tabIndicatorColor"
+        app:tabSelectedTextColor="?attr/tabSelectedTextColor"
         app:tabMode="scrollable" />
 
 </com.google.android.material.appbar.AppBarLayout>
