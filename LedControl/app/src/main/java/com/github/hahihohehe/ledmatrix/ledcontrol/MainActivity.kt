@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
-import com.github.hahihohehe.ledmatrix.ledcontrol.ui.main.MainFragment
+import com.github.hahihohehe.ledmatrix.ledcontrol.ui.main.MatrixFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -108,6 +108,42 @@ class MainActivity : AppCompatActivity() {
             else
                 Toast.makeText(this, "nur HTTPS erlaubt", Toast.LENGTH_LONG).show()
         }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            println("permission not granted")
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                1
+            )
+        } else {
+            println("permission granted")
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            println("permission not granted")
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                1
+            )
+        } else {
+            println("permission granted")
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.contains(PackageManager.PERMISSION_DENIED))
+            finish()
     }
 
     override fun onStart() {
@@ -121,7 +157,7 @@ class MainActivity : AppCompatActivity() {
             .putString(KEY_IP_ADDRESS, etIpAddress.text.toString()).apply()
     }
 
-    var activeFragment = MainFragment()
+    var activeFragment = MatrixFragment()
 
     companion object {
         const val KEY_IP_ADDRESS = "IP_ADDRESS"

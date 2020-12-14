@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.github.hahihohehe.ledmatrix.ledcontrol.ColorPaletteView
@@ -15,12 +13,22 @@ import com.github.hahihohehe.ledmatrix.ledcontrol.MatrixView
 import com.github.hahihohehe.ledmatrix.ledcontrol.R
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
 
-class MainFragment : Fragment() {
-    private lateinit var viewModel: MainViewModel
+class MatrixFragment : Fragment() {
+    private lateinit var viewModel: MatrixViewModel
     private lateinit var matrixView: MatrixView
     private lateinit var colorPaletteView: ColorPaletteView
-    private lateinit var btnUpload: Button
-    private lateinit var etIpAddress: EditText
+    private var matrixId: Long = -1
+
+    companion object {
+        fun getInstance(matrixId: Long): MatrixFragment {
+            val fragment = MatrixFragment()
+            fragment.matrixId = matrixId
+            return fragment
+        }
+
+        const val EMPTY_MATRIX = -1L
+        private const val MATRIX_ID = "Matrix_Id"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,16 +63,29 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        if (savedInstanceState != null)
+            matrixId = savedInstanceState.getLong(MATRIX_ID)
+        viewModel = ViewModelProvider(this).get(MatrixViewModel::class.java)
         viewModel.colors.observe(viewLifecycleOwner,
             { colors -> matrixView.setColors(colors) })
         viewModel.palette.observe(viewLifecycleOwner,
             { colors -> colorPaletteView.setColors(colors) })
+        viewModel.loadImage(matrixId)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.saveMatrixImage()
     }
 
     override fun onResume() {
         super.onResume()
         (requireActivity() as MainActivity).activeFragment = this
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(MATRIX_ID, matrixId)
     }
 
     val matrixJson get() = viewModel.createJson()
