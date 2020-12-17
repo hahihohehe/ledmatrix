@@ -2,9 +2,7 @@ package com.github.hahihohehe.ledmatrix.ledcontrol.ui.main
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.github.hahihohehe.ledmatrix.ledcontrol.ColorPaletteView
@@ -18,6 +16,7 @@ class MatrixFragment : Fragment() {
     private lateinit var matrixView: MatrixView
     private lateinit var colorPaletteView: ColorPaletteView
     private var matrixId: Long = -1
+    private var deleted = false
 
     companion object {
         fun getInstance(matrixId: Long): MatrixFragment {
@@ -28,6 +27,7 @@ class MatrixFragment : Fragment() {
 
         const val EMPTY_MATRIX = -1L
         private const val MATRIX_ID = "Matrix_Id"
+        private const val DELETED = "deleted"
     }
 
     override fun onCreateView(
@@ -63,19 +63,41 @@ class MatrixFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             matrixId = savedInstanceState.getLong(MATRIX_ID)
+            deleted = savedInstanceState.getBoolean(DELETED)
+        }
         viewModel = ViewModelProvider(this).get(MatrixViewModel::class.java)
         viewModel.colors.observe(viewLifecycleOwner,
             { colors -> matrixView.setColors(colors) })
         viewModel.palette.observe(viewLifecycleOwner,
             { colors -> colorPaletteView.setColors(colors) })
         viewModel.loadImage(matrixId)
+
+        setHasOptionsMenu(true)
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.saveMatrixImage()
+        if (!deleted)
+            viewModel.saveMatrixImage()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+        menu.findItem(R.id.miDelete).isVisible = viewModel.matrixImage != null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.miDelete) {
+            deleted = true
+            viewModel.deleteMatrixImage()
+            return true
+        } else if (item.itemId == R.id.miAddImage) {
+            viewModel.addNewImage()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
@@ -86,6 +108,7 @@ class MatrixFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong(MATRIX_ID, matrixId)
+        outState.putBoolean(DELETED, deleted)
     }
 
     val matrixJson get() = viewModel.createJson()

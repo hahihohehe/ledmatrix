@@ -28,7 +28,7 @@ class MatrixViewModel(application: Application) : AndroidViewModel(application) 
     private fun loadImage(image: MatrixImage) {
         for (x in 0 until 10)
             for (y in 0 until 10)
-                colorsSource[x][y] = image.bitmap.getPixel(x, y)
+                colorsSource[x][y] = image.bitmap.getPixel(y, x)
     }
 
     fun updateColor(x: Int, y: Int, selected: Int) {
@@ -57,7 +57,7 @@ class MatrixViewModel(application: Application) : AndroidViewModel(application) 
         return sb.toString()
     }
 
-    fun isEmpty(): Boolean {
+    private fun isEmpty(): Boolean {
         for (x in 0 until 10)
             for (y in 0 until 10)
                 if (colorsSource[x][y] and 0x00FFFFFF != 0)
@@ -77,14 +77,22 @@ class MatrixViewModel(application: Application) : AndroidViewModel(application) 
             for (y in 0 until 10)
                 canvas.drawRect(
                     Rect(x, y, x + 1, y + 1),
-                    Paint().apply { color = colorsSource[x][y] })
+                    Paint().apply { color = colorsSource[y][x] })
         matrixImage!!.bitmap = image
         imageRepository.saveImage(matrixImage!!)
+    }
+
+    fun addNewImage() {
+        imageRepository.addNewImage()
     }
 
     override fun onCleared() {
         super.onCleared()
         println("Cleared Viewmodel")
-        saveMatrixImage()
+        //saveMatrixImage()
+    }
+
+    fun deleteMatrixImage() {
+        imageRepository.deleteMatrixImage(matrixImage!!)
     }
 }

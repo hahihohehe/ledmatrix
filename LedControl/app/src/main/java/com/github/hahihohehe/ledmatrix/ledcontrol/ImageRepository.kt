@@ -1,10 +1,11 @@
 package com.github.hahihohehe.ledmatrix.ledcontrol
 
 import android.app.Application
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.os.Environment
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -20,10 +21,10 @@ fun imageRepository(application: Application): ImageRepository {
 
 class ImageRepository {
     private var imageFolder: File = File(Environment.getExternalStorageDirectory(), "matrix_images")
-    var imageList: List<MatrixImage> private set
+    val images: LiveData<List<MatrixImage>> = MutableLiveData(listOf())
+    private var imageList: List<MatrixImage> = LinkedList<MatrixImage>()
 
     init {
-        imageList = LinkedList<MatrixImage>()
         imageFolder.mkdir()
         readImages()
     }
@@ -43,9 +44,26 @@ class ImageRepository {
             }
 
         }
+        if (imageList.isEmpty())
+            addNewImage()
+        else
+            (images as MutableLiveData).value = imageList
     }
 
     fun getImage(id: Long) = imageList.filter { image -> image.id == id }[0]
+
+    fun addNewImage(): MatrixImage {
+        val bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        for (x in 0 until 10)
+            for (y in 0 until 10)
+                canvas.drawRect(
+                    Rect(x, y, x + 1, y + 1),
+                    Paint().apply { color = 0xFF000000.toInt() })
+        val matrixImage = MatrixImage(bitmap)
+        saveImage(matrixImage)
+        return matrixImage
+    }
 
     fun saveImage(image: MatrixImage) {
         val fos = FileOutputStream(File(imageFolder.absolutePath, "${image.id}.png"))
@@ -55,7 +73,19 @@ class ImageRepository {
 
         fos.close()
 
-        if (!imageList.contains(image))
+        if (!imageList.contains(image)) {
             (imageList as LinkedList).add(image)
+            (images as MutableLiveData).value = imageList
+        }
+    }
+
+    fun deleteMatrixImage(image: MatrixImage) {
+        File(imageFolder.absolutePath, "${image.id}.png").delete()
+        (imageList as LinkedList).remove(image)
+
+        if (imageList.isEmpty())
+            addNewImage()
+        else
+            (images as MutableLiveData).value = imageList
     }
 }
