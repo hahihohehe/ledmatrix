@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 
 private var imageRepository: ImageRepository = ImageRepository()
@@ -30,17 +31,18 @@ class ImageRepository {
     }
 
     private fun readImages() {
-        imageFolder.listFiles()!!.forEach { file ->
-            try {
-                if (file.name.endsWith(".png"))
-                    (imageList as LinkedList).add(
-                        MatrixImage(
-                            BitmapFactory.decodeFile(file.absolutePath),
-                            file.name.substring(0, file.name.length - 4).toLong()
+        imageFolder.listFiles()
+            ?.forEach { file ->  //read no images if it is not possible to read files
+                try {
+                    if (file.name.endsWith(".png"))
+                        (imageList as LinkedList).add(
+                            MatrixImage(
+                                BitmapFactory.decodeFile(file.absolutePath),
+                                file.name.substring(0, file.name.length - 4).toLong()
+                            )
                         )
-                    )
-            } catch (e: NumberFormatException) {
-                Log.d("READ IMAGE", "File $file does not have a valid name")
+                } catch (e: NumberFormatException) {
+                    Log.d("READ IMAGE", "File $file does not have a valid name")
             }
 
         }
@@ -66,12 +68,16 @@ class ImageRepository {
     }
 
     fun saveImage(image: MatrixImage) {
-        val fos = FileOutputStream(File(imageFolder.absolutePath, "${image.id}.png"))
-        fos.use { fos ->
-            image.bitmap.compress(Bitmap.CompressFormat.PNG, 25, fos)
+        try {
+            val fos = FileOutputStream(File(imageFolder.absolutePath, "${image.id}.png"))
+            fos.use { fos ->
+                image.bitmap.compress(Bitmap.CompressFormat.PNG, 25, fos)
+            }
+            fos.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return
         }
-
-        fos.close()
 
         if (!imageList.contains(image)) {
             (imageList as LinkedList).add(image)

@@ -6,12 +6,15 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
 import com.github.hahihohehe.ledmatrix.ledcontrol.ui.main.MatrixFragment
 
-class MatricesAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-    private val imageRepository = imageRepository(activity.application)
+class MatricesAdapter(val activity: AppCompatActivity) : FragmentStateAdapter(activity) {
     private var cachedImages: List<MatrixImage> = listOf()
 
     init {
-        imageRepository.images.observe(activity) {
+        initRepository()
+    }
+
+    fun initRepository() {
+        imageRepository(activity.application).images.observe(activity) {
             cachedImages = it
             println(cachedImages)
             notifyDataSetChanged()

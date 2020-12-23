@@ -23,6 +23,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
@@ -36,14 +37,11 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        checkPermissions()
-
+        val hasPermissions = checkPermissions()
         tabLayout = findViewById(R.id.tab_layout)
         pager = findViewById(R.id.pager)
-        pager.adapter = MatricesAdapter(this)
-        TabLayoutMediator(tabLayout, pager) { tab, position ->
-            tab.text = position.toString()
-        }.attach()
+        if (hasPermissions)
+            initViewPager()
 
         etIpAddress = findViewById(R.id.etIpAddress)
         btnUpload = findViewById(R.id.btnUpload)
@@ -54,6 +52,13 @@ class MainActivity : AppCompatActivity() {
             }
             upload(etIpAddress.text.toString())
         }
+    }
+
+    fun initViewPager() {
+        pager.adapter = MatricesAdapter(this)
+        TabLayoutMediator(tabLayout, pager) { tab, position ->
+            tab.text = position.toString()
+        }.attach()
     }
 
     private fun upload(ipAddress: String) {
@@ -92,12 +97,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermissions() {
+    private fun checkPermissions(): Boolean {
+        val list = LinkedList<String>()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
             != PackageManager.PERMISSION_GRANTED
         ) {
             println("permission not granted")
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.INTERNET), 1)
+            list.add(Manifest.permission.INTERNET)
         } else {
             println("permission granted")
         }
@@ -113,11 +119,7 @@ class MainActivity : AppCompatActivity() {
             != PackageManager.PERMISSION_GRANTED
         ) {
             println("permission not granted")
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                1
-            )
+            list.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         } else {
             println("permission granted")
         }
@@ -126,14 +128,20 @@ class MainActivity : AppCompatActivity() {
             != PackageManager.PERMISSION_GRANTED
         ) {
             println("permission not granted")
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                1
-            )
+            list.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
             println("permission granted")
         }
+
+        if (!list.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                list.toTypedArray(),
+                1
+            )
+            return false
+        }
+        return true
     }
 
     override fun onRequestPermissionsResult(
@@ -142,8 +150,20 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.contains(PackageManager.PERMISSION_DENIED))
+        if (grantResults.contains(PackageManager.PERMISSION_DENIED)) {
+            Toast.makeText(this, "these permissions are required", Toast.LENGTH_LONG).show()
             finish()
+        }
+        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            if (checkPermissions())
+                initViewPager()
+            //Handler().postDelayed(this::recreate, 1000)
+            //recreate()
+//            (pager.adapter as MatricesAdapter).initRepository()
+//            TabLayoutMediator(tabLayout, pager) { tab, position ->
+//                tab.text = position.toString()
+//            }.attach()
+        }
     }
 
     override fun onStart() {
